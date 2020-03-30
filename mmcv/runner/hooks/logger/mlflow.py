@@ -60,3 +60,4 @@ class MLflowLoggerHook(LoggerHook):
     def after_run(self, runner):
         if self.log_model:
             self.mlflow.pytorch.log_model(runner.model, "models")
+        self._mlflow_client.set_terminated(self._run_id)
