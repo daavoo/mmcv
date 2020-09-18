@@ -24,16 +24,17 @@ except ModuleNotFoundError:
     print('Skip building ext ops due to the absence of torch.')
 
 
-def choose_requirement(primary, secondary):
-    """If some version of primary requirement installed, return primary, else
-    return secondary."""
-    try:
-        name = re.split(r'[!<>=]', primary)[0]
-        get_distribution(name)
-    except DistributionNotFound:
-        return secondary
+def choose_requirement(*choices):
+    """For choice in choices, if some version of choice is installed, return
+    that, else return the last choice."""
+    for choice in choices:
+        try:
+            name = re.split(r'[!<>=]', choice)[0]
+            get_distribution(name)
+        except DistributionNotFound:
+            continue
 
-    return str(primary)
+    return choice
 
 
 def get_version():
@@ -119,12 +120,10 @@ def parse_requirements(fname='requirements.txt', with_version=True):
     return packages
 
 
-# If first not installed install second package
-CHOOSE_INSTALL_REQUIRES = [('opencv-python-headless>=3', 'opencv-python>=3')]
-
 install_requires = parse_requirements()
-for main, secondary in CHOOSE_INSTALL_REQUIRES:
-    install_requires.append(choose_requirement(main, secondary))
+install_requires.append(
+    choose_requirement('py-opencv>=3', 'opencv-python-headless>=3',
+                       'opencv-python>=3'))
 
 
 def get_extensions():
