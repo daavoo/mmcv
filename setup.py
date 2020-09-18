@@ -31,6 +31,7 @@ def choose_requirement(*choices):
         try:
             name = re.split(r'[!<>=]', choice)[0]
             get_distribution(name)
+            break
         except DistributionNotFound:
             continue
 
